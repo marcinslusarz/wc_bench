@@ -218,7 +218,9 @@ main(int argc, char *argv[])
 	int is_pmem;
 
 	if (argc < 3) {
-		fprintf(stderr, "not enough args\n");
+		fprintf(stderr,
+			"Usage: %s path memcpy_size_in_cls [max_memcpy_size_in_cls]\n",
+			argv[0]);
 		exit(1);
 	}
 
