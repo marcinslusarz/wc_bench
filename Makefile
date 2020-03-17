@@ -10,6 +10,9 @@ all: wc_sse2 wc_avx wc_avx512f
 
 run_all: run_sse2 run_avx run_avx512f
 
+clean:
+	rm -f wc_sse2 wc_avx wc_avx512f
+
 wc_sse2: wc.c Makefile
 	$(CC) wc.c -DUSE_SSE2 $(shell pkg-config --cflags libpmem) -o wc_sse2 $(shell pkg-config --libs libpmem) -O2
 
