@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright 2020, Intel Corporation
+
 #include <immintrin.h>
 #include <libpmem.h>
 #include <stdbool.h>
