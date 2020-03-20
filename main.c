@@ -74,6 +74,7 @@ measure(char *pmem, size_t pmemlen, size_t cpy_len, char *dram, bool csv)
 		printf("copied:    %.3f GiB\n", 1.0 * copied / GIGA);
 		printf("bw:        %0.3f GiB/s\n", 1.0 * NSEC_IN_SEC * copied / GIGA / tm);
 	}
+	fflush(stdout);
 }
 
 int
