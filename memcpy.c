@@ -2,23 +2,10 @@
 // Copyright 2020, Intel Corporation
 
 #include <immintrin.h>
-#include <libpmem.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-
-#define MEGA (1ULL << 20)
-#define GIGA (1ULL << 30)
-#define NSEC_IN_SEC (1000ULL * 1000 * 1000)
-
-#define LOOPS 10
-#define PMEM_SIZE (4 * GIGA)
-#define DRAM_SIZE (100 * MEGA)
 
 #if defined(USE_SSE2)
 
-static const char mode[] = "SSE2";
+const char *mode = "SSE2";
 
 static inline void
 memmove_movnt4x64b(char *dest, const char *src)
@@ -96,7 +83,7 @@ memmove_movnt1x64b(char *dest, const char *src)
 
 #elif defined(USE_AVX)
 
-static const char mode[] = "AVX";
+const char *mode = "AVX";
 
 static inline void
 memmove_movnt8x64b(char *dest, const char *src)
@@ -185,7 +172,7 @@ memmove_movnt1x64b(char *dest, const char *src)
 
 #elif defined(USE_AVX512F)
 
-static const char mode[] = "AVX512F";
+const char *mode = "AVX512F";
 
 static inline void
 memmove_movnt32x64b(char *dest, const char *src)
@@ -351,173 +338,62 @@ memmove_movnt1x64b(char *dest, const char *src)
 
 #else
 #error set USE_SSE2 or USE_AVX or USE_AVX512F
-static const char mode[] = "?";
+const char *mode = "?";
 void memmove_movnt4x64b(char *dest, const char *src);
 void memmove_movnt1x64b(char *dest, const char *src);
 #endif
 
-static void
-measure(char *pmem, size_t pmemlen, size_t cpy_len, char *dram, bool csv)
+void
+wc_memcpy(char *dest, const char *src, size_t sz)
 {
-	char *dest = pmem;
-	char *dest_end = dest + pmemlen - cpy_len;
-	char *src = dram;
-	char *src_end = src + DRAM_SIZE - cpy_len;
-
-	if (csv) {
-		printf("%s,%0.3f,%zu,", mode, 1.0 * pmemlen / GIGA, cpy_len);
-	} else {
-		printf("mode:      %s\n", mode);
-		printf("file size: %0.3f GiB\n", 1.0 * pmemlen / GIGA);
-		printf("copy len:  %zu B\n", cpy_len);
-	}
-
-	struct timespec start, end;
-	if (clock_gettime(CLOCK_REALTIME, &start)) {
-		perror("clock_gettime");
-		exit(1);
-	}
-
-	size_t copied = 0;
-	for (unsigned i = 0; i < LOOPS; ++i) {
-		while (dest < dest_end) {
-			size_t sz = cpy_len;
-
 #if defined(USE_AVX512F) && defined(USE_ALL_REGS)
-			while (sz >= 2048) {
-				memmove_movnt32x64b(dest, src);
-				dest += 2048;
-				src += 2048;
-				sz -= 2048;
-			}
+	while (sz >= 2048) {
+		memmove_movnt32x64b(dest, src);
+		dest += 2048;
+		src += 2048;
+		sz -= 2048;
+	}
 
-			while (sz >= 1024) {
-				memmove_movnt16x64b(dest, src);
-				dest += 1024;
-				src += 1024;
-				sz -= 1024;
-			}
+	while (sz >= 1024) {
+		memmove_movnt16x64b(dest, src);
+		dest += 1024;
+		src += 1024;
+		sz -= 1024;
+	}
 #endif
 
 #if (defined(USE_AVX) || defined(USE_AVX512F)) && defined(USE_ALL_REGS)
-			while (sz >= 512) {
-				memmove_movnt8x64b(dest, src);
-				dest += 512;
-				src += 512;
-				sz -= 512;
-			}
+	while (sz >= 512) {
+		memmove_movnt8x64b(dest, src);
+		dest += 512;
+		src += 512;
+		sz -= 512;
+	}
 #endif
 
-			while (sz >= 256) {
-				memmove_movnt4x64b(dest, src);
-				dest += 256;
-				src += 256;
-				sz -= 256;
-			}
+	while (sz >= 256) {
+		memmove_movnt4x64b(dest, src);
+		dest += 256;
+		src += 256;
+		sz -= 256;
+	}
 
-			while (sz >= 128) {
-				memmove_movnt2x64b(dest, src);
-				dest += 128;
-				src += 128;
-				sz -= 128;
-			}
+	while (sz >= 128) {
+		memmove_movnt2x64b(dest, src);
+		dest += 128;
+		src += 128;
+		sz -= 128;
+	}
 
-			while (sz >= 64) {
-				memmove_movnt1x64b(dest, src);
-				dest += 64;
-				src += 64;
-				sz -= 64;
-			}
+	while (sz >= 64) {
+		memmove_movnt1x64b(dest, src);
+		dest += 64;
+		src += 64;
+		sz -= 64;
+	}
 #if defined(USE_AVX) || defined(USE_AVX512F)
-			_mm256_zeroupper();
+	_mm256_zeroupper();
 #endif
 
-			_mm_sfence();
-			copied += cpy_len;
-
-			if (src >= src_end)
-				src = dram;
-		}
-		dest = pmem;
-	}
-
-	if (clock_gettime(CLOCK_REALTIME, &end)) {
-		perror("clock_gettime");
-		exit(1);
-	}
-
-	unsigned long long tm = (end.tv_sec - start.tv_sec) * NSEC_IN_SEC +
-			end.tv_nsec - start.tv_nsec;
-
-	if (csv) {
-		printf("%.3f,", 1.0 * tm / NSEC_IN_SEC);
-		printf("%.3f,", 1.0 * copied / GIGA);
-		printf("%0.3f\n", 1.0 * NSEC_IN_SEC * copied / GIGA / tm);
-	} else {
-		printf("time:      %.3f s\n", 1.0 * tm / NSEC_IN_SEC);
-		printf("copied:    %.3f GiB\n", 1.0 * copied / GIGA);
-		printf("bw:        %0.3f GiB/s\n", 1.0 * NSEC_IN_SEC * copied / GIGA / tm);
-	}
-}
-
-int
-main(int argc, char *argv[])
-{
-	char *pmem;
-	size_t pmemlen;
-	int is_pmem;
-
-	if (argc < 3) {
-		fprintf(stderr,
-			"Usage: %s path memcpy_size_in_cls [max_memcpy_size_in_cls]\n",
-			argv[0]);
-		exit(1);
-	}
-
-	pmem = pmem_map_file(argv[1], PMEM_SIZE, PMEM_FILE_CREATE, 0644,
-			&pmemlen, &is_pmem);
-	if (pmem == NULL) {
-		fprintf(stderr, "pmem_map_file: %s\n", pmem_errormsg());
-		exit(1);
-	}
-	if (!is_pmem) {
-		fprintf(stderr, "%s is not pmem\n", argv[1]);
-		exit(1);
-	}
-
-	char *dram = malloc(DRAM_SIZE);
-	if (!dram) {
-		perror("malloc");
-		exit(1);
-	}
-
-	for (size_t i = 0; i < DRAM_SIZE; ++i)
-		dram[i] = i & 0xff;
-
-	/* prefault */
-	memset(pmem, 0, pmemlen);
-
-	size_t cpy_len = atoi(argv[2]) * 64;
-	size_t max_cpy_len = cpy_len;
-
-	if (argc > 3)
-		max_cpy_len = atoi(argv[3]) * 64;
-
-	bool csv = cpy_len != max_cpy_len;
-
-	if (csv)
-		printf("mode,file_size[GiB],copy_len[B],time[s],copied[GiB],bw[GiB/s]\n");
-
-	while (cpy_len <= max_cpy_len) {
-		measure(pmem, pmemlen, cpy_len, dram, csv);
-		cpy_len += 64;
-		if (!csv)
-			printf("--\n");
-	}
-
-//	pmem_msync(pmem, pmemlen);
-	pmem_unmap(pmem, pmemlen);
-	free(dram);
-
-	return 0;
+	_mm_sfence();
 }

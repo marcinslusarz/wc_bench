@@ -1,0 +1,6 @@
+.*
+!.gitignore
+*.o
+wc_avx
+wc_avx512f
+wc_sse2
