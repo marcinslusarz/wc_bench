@@ -4,7 +4,8 @@
 #ifndef WC_MEMCPY_H
 #define WC_MEMCPY_H
 
-const char *mode;
+extern int max_batch_size;
+extern const char *level;
 void wc_memcpy(char *dest, const char *src, size_t sz);
 
 #endif

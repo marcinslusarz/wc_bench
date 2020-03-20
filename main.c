@@ -27,11 +27,13 @@ measure(char *pmem, size_t pmemlen, size_t cpy_len, char *dram, bool csv)
 	char *src_end = src + DRAM_SIZE - cpy_len;
 
 	if (csv) {
-		printf("%s,%0.3f,%zu,", mode, 1.0 * pmemlen / GIGA, cpy_len);
+		printf("%s,%d,%0.3f,%zu,", level, max_batch_size,
+				1.0 * pmemlen / GIGA, cpy_len);
 	} else {
-		printf("mode:      %s\n", mode);
-		printf("file size: %0.3f GiB\n", 1.0 * pmemlen / GIGA);
-		printf("copy len:  %zu B\n", cpy_len);
+		printf("level:          %s\n", level);
+		printf("max_batch_size: %d\n", max_batch_size);
+		printf("file size:      %0.3f GiB\n", 1.0 * pmemlen / GIGA);
+		printf("copy len:       %zu B\n", cpy_len);
 	}
 
 	struct timespec start, end;
@@ -85,6 +87,11 @@ main(int argc, char *argv[])
 		fprintf(stderr,
 			"Usage: %s path memcpy_size_in_cls [max_memcpy_size_in_cls]\n",
 			argv[0]);
+		exit(1);
+	}
+	const char *mbs = getenv("MAX_BATCH_SIZE");
+	if (mbs && atoi(mbs) != max_batch_size) {
+		fprintf(stderr, "MAX_BATCH_SIZE env var doesn't match compile time value, forgot to rebuild?\n");
 		exit(1);
 	}
 

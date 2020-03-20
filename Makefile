@@ -1,11 +1,13 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2020, Intel Corporation
 
-PMEM?=/dev/shm/aaa
+PMEM?=/dev/null
 NUMANODE?=0
 CLS?=1
-CLSMAX?=16
-MEMCPY_CFLAGS=-DUSE_ALL_REGS -O2
+CLSMAX?=64
+MAX_BATCH_SIZE?=2048
+
+MEMCPY_CFLAGS=-DMAX_BATCH_SIZE=$(MAX_BATCH_SIZE) -O2
 
 MAIN_CFLAGS=$(shell pkg-config --cflags libpmem)
 LDFLAGS=$(shell pkg-config --libs libpmem)

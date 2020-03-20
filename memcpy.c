@@ -3,9 +3,11 @@
 
 #include <immintrin.h>
 
+int max_batch_size = MAX_BATCH_SIZE;
+
 #if defined(USE_SSE2)
 
-const char *mode = "SSE2";
+const char *level = "SSE2";
 
 static inline void
 memmove_movnt4x64b(char *dest, const char *src)
@@ -83,7 +85,7 @@ memmove_movnt1x64b(char *dest, const char *src)
 
 #elif defined(USE_AVX)
 
-const char *mode = "AVX";
+const char *level = "AVX";
 
 static inline void
 memmove_movnt8x64b(char *dest, const char *src)
@@ -172,7 +174,7 @@ memmove_movnt1x64b(char *dest, const char *src)
 
 #elif defined(USE_AVX512F)
 
-const char *mode = "AVX512F";
+const char *level = "AVX512F";
 
 static inline void
 memmove_movnt32x64b(char *dest, const char *src)
@@ -338,22 +340,23 @@ memmove_movnt1x64b(char *dest, const char *src)
 
 #else
 #error set USE_SSE2 or USE_AVX or USE_AVX512F
-const char *mode = "?";
-void memmove_movnt4x64b(char *dest, const char *src);
+const char *level = "?";
 void memmove_movnt1x64b(char *dest, const char *src);
 #endif
 
 void
 wc_memcpy(char *dest, const char *src, size_t sz)
 {
-#if defined(USE_AVX512F) && defined(USE_ALL_REGS)
+#if defined(USE_AVX512F) && MAX_BATCH_SIZE >= 2048
 	while (sz >= 2048) {
 		memmove_movnt32x64b(dest, src);
 		dest += 2048;
 		src += 2048;
 		sz -= 2048;
 	}
+#endif
 
+#if defined(USE_AVX512F) && MAX_BATCH_SIZE >= 1024
 	while (sz >= 1024) {
 		memmove_movnt16x64b(dest, src);
 		dest += 1024;
@@ -362,7 +365,7 @@ wc_memcpy(char *dest, const char *src, size_t sz)
 	}
 #endif
 
-#if (defined(USE_AVX) || defined(USE_AVX512F)) && defined(USE_ALL_REGS)
+#if (defined(USE_AVX) || defined(USE_AVX512F)) && MAX_BATCH_SIZE >= 512
 	while (sz >= 512) {
 		memmove_movnt8x64b(dest, src);
 		dest += 512;
@@ -371,19 +374,23 @@ wc_memcpy(char *dest, const char *src, size_t sz)
 	}
 #endif
 
+#if MAX_BATCH_SIZE >= 256
 	while (sz >= 256) {
 		memmove_movnt4x64b(dest, src);
 		dest += 256;
 		src += 256;
 		sz -= 256;
 	}
+#endif
 
+#if MAX_BATCH_SIZE >= 128
 	while (sz >= 128) {
 		memmove_movnt2x64b(dest, src);
 		dest += 128;
 		src += 128;
 		sz -= 128;
 	}
+#endif
 
 	while (sz >= 64) {
 		memmove_movnt1x64b(dest, src);
