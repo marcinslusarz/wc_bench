@@ -46,10 +46,10 @@ wc_avx512f: main.o Makefile memcpy_avx512f.o
 
 
 run_sse2: wc_sse2
-	LD_LIBRARY_PATH=$(LIBDIR):$LD_LIBRARY_PATH numactl -N $(NUMANODE) ./wc_sse2    $(PMEM) $(CLS) $(CLSMAX)
+	LD_LIBRARY_PATH=$(LIBDIR):$(LD_LIBRARY_PATH) numactl -N $(NUMANODE) ./wc_sse2    $(PMEM) $(CLS) $(CLSMAX)
 
 run_avx: wc_avx
-	LD_LIBRARY_PATH=$(LIBDIR):$LD_LIBRARY_PATH numactl -N $(NUMANODE) ./wc_avx     $(PMEM) $(CLS) $(CLSMAX)
+	LD_LIBRARY_PATH=$(LIBDIR):$(LD_LIBRARY_PATH) numactl -N $(NUMANODE) ./wc_avx     $(PMEM) $(CLS) $(CLSMAX)
 	
 run_avx512f: wc_avx512f
-	LD_LIBRARY_PATH=$(LIBDIR):$LD_LIBRARY_PATH numactl -N $(NUMANODE) ./wc_avx512f $(PMEM) $(CLS) $(CLSMAX)
+	LD_LIBRARY_PATH=$(LIBDIR):$(LD_LIBRARY_PATH) numactl -N $(NUMANODE) ./wc_avx512f $(PMEM) $(CLS) $(CLSMAX)
