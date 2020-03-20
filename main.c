@@ -127,8 +127,10 @@ main(int argc, char *argv[])
 
 	bool csv = cpy_len != max_cpy_len;
 
-	if (csv)
-		printf("mode,file_size[GiB],copy_len[B],time[s],copied[GiB],bw[GiB/s]\n");
+	if (csv) {
+		printf("mode,max_batch_size[B],file_size[GiB],copy_len[B],time[s],copied[GiB],bw[GiB/s]\n");
+		fflush(stdout);
+	}
 
 	while (cpy_len <= max_cpy_len) {
 		measure(pmem, pmemlen, cpy_len, dram, csv);
