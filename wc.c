@@ -181,6 +181,9 @@ measure(char *pmem, size_t pmemlen, size_t cpy_len, char *dram, bool csv)
 				src += 64;
 				sz -= 64;
 			}
+#if defined(USE_AVX) || defined(USE_AVX512F)
+			_mm256_zeroupper();
+#endif
 
 			_mm_sfence();
 			copied += cpy_len;
