@@ -8,6 +8,9 @@ CLSMAX?=64
 MAX_BATCH_SIZE?=2048
 
 MEMCPY_CFLAGS=-DMAX_BATCH_SIZE=$(MAX_BATCH_SIZE) -O2
+ifeq ($(USE_ASM),1)
+MEMCPY_CFLAGS += -DUSE_ASM
+endif
 
 MAIN_CFLAGS=$(shell pkg-config --cflags libpmem)
 LDFLAGS=$(shell pkg-config --libs libpmem)
