@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright 2020, Intel Corporation
 
+// XXX NT are NOT used, this is just a quick hack to see T perf numbers
+
 #include <immintrin.h>
 
 int max_batch_size = MAX_BATCH_SIZE;
@@ -30,22 +32,22 @@ memmove_movnt4x64b(char *dest, const char *src)
 		"movdqu 0xd0(%1), %%xmm13\n"
 		"movdqu 0xe0(%1), %%xmm14\n"
 		"movdqu 0xf0(%1), %%xmm15\n"
-		"movntdq %%xmm0, 0x00(%0)\n"
-		"movntdq %%xmm1, 0x10(%0)\n"
-		"movntdq %%xmm2, 0x20(%0)\n"
-		"movntdq %%xmm3, 0x30(%0)\n"
-		"movntdq %%xmm4, 0x40(%0)\n"
-		"movntdq %%xmm5, 0x50(%0)\n"
-		"movntdq %%xmm6, 0x60(%0)\n"
-		"movntdq %%xmm7, 0x70(%0)\n"
-		"movntdq %%xmm8, 0x80(%0)\n"
-		"movntdq %%xmm9, 0x90(%0)\n"
-		"movntdq %%xmm10, 0xa0(%0)\n"
-		"movntdq %%xmm11, 0xb0(%0)\n"
-		"movntdq %%xmm12, 0xc0(%0)\n"
-		"movntdq %%xmm13, 0xd0(%0)\n"
-		"movntdq %%xmm14, 0xe0(%0)\n"
-		"movntdq %%xmm15, 0xf0(%0)\n"
+		"movaps %%xmm0, 0x00(%0)\n"
+		"movaps %%xmm1, 0x10(%0)\n"
+		"movaps %%xmm2, 0x20(%0)\n"
+		"movaps %%xmm3, 0x30(%0)\n"
+		"movaps %%xmm4, 0x40(%0)\n"
+		"movaps %%xmm5, 0x50(%0)\n"
+		"movaps %%xmm6, 0x60(%0)\n"
+		"movaps %%xmm7, 0x70(%0)\n"
+		"movaps %%xmm8, 0x80(%0)\n"
+		"movaps %%xmm9, 0x90(%0)\n"
+		"movaps %%xmm10, 0xa0(%0)\n"
+		"movaps %%xmm11, 0xb0(%0)\n"
+		"movaps %%xmm12, 0xc0(%0)\n"
+		"movaps %%xmm13, 0xd0(%0)\n"
+		"movaps %%xmm14, 0xe0(%0)\n"
+		"movaps %%xmm15, 0xf0(%0)\n"
 		:
 		: "r"(dest), "r"(src)
 		: "memory", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5",
@@ -70,22 +72,22 @@ memmove_movnt4x64b(char *dest, const char *src)
 	__m128i xmm14 = _mm_loadu_si128((__m128i *)src + 14);
 	__m128i xmm15 = _mm_loadu_si128((__m128i *)src + 15);
 
-	_mm_stream_si128((__m128i *)dest + 0, xmm0);
-	_mm_stream_si128((__m128i *)dest + 1, xmm1);
-	_mm_stream_si128((__m128i *)dest + 2, xmm2);
-	_mm_stream_si128((__m128i *)dest + 3, xmm3);
-	_mm_stream_si128((__m128i *)dest + 4, xmm4);
-	_mm_stream_si128((__m128i *)dest + 5, xmm5);
-	_mm_stream_si128((__m128i *)dest + 6, xmm6);
-	_mm_stream_si128((__m128i *)dest + 7, xmm7);
-	_mm_stream_si128((__m128i *)dest + 8, xmm8);
-	_mm_stream_si128((__m128i *)dest + 9, xmm9);
-	_mm_stream_si128((__m128i *)dest + 10, xmm10);
-	_mm_stream_si128((__m128i *)dest + 11, xmm11);
-	_mm_stream_si128((__m128i *)dest + 12, xmm12);
-	_mm_stream_si128((__m128i *)dest + 13, xmm13);
-	_mm_stream_si128((__m128i *)dest + 14, xmm14);
-	_mm_stream_si128((__m128i *)dest + 15, xmm15);
+	_mm_store_si128((__m128i *)dest + 0, xmm0);
+	_mm_store_si128((__m128i *)dest + 1, xmm1);
+	_mm_store_si128((__m128i *)dest + 2, xmm2);
+	_mm_store_si128((__m128i *)dest + 3, xmm3);
+	_mm_store_si128((__m128i *)dest + 4, xmm4);
+	_mm_store_si128((__m128i *)dest + 5, xmm5);
+	_mm_store_si128((__m128i *)dest + 6, xmm6);
+	_mm_store_si128((__m128i *)dest + 7, xmm7);
+	_mm_store_si128((__m128i *)dest + 8, xmm8);
+	_mm_store_si128((__m128i *)dest + 9, xmm9);
+	_mm_store_si128((__m128i *)dest + 10, xmm10);
+	_mm_store_si128((__m128i *)dest + 11, xmm11);
+	_mm_store_si128((__m128i *)dest + 12, xmm12);
+	_mm_store_si128((__m128i *)dest + 13, xmm13);
+	_mm_store_si128((__m128i *)dest + 14, xmm14);
+	_mm_store_si128((__m128i *)dest + 15, xmm15);
 #endif
 }
 
@@ -102,14 +104,14 @@ memmove_movnt2x64b(char *dest, const char *src)
 		"movdqu 0x50(%1), %%xmm5\n"
 		"movdqu 0x60(%1), %%xmm6\n"
 		"movdqu 0x70(%1), %%xmm7\n"
-		"movntdq %%xmm0, 0x00(%0)\n"
-		"movntdq %%xmm1, 0x10(%0)\n"
-		"movntdq %%xmm2, 0x20(%0)\n"
-		"movntdq %%xmm3, 0x30(%0)\n"
-		"movntdq %%xmm4, 0x40(%0)\n"
-		"movntdq %%xmm5, 0x50(%0)\n"
-		"movntdq %%xmm6, 0x60(%0)\n"
-		"movntdq %%xmm7, 0x70(%0)\n"
+		"movaps %%xmm0, 0x00(%0)\n"
+		"movaps %%xmm1, 0x10(%0)\n"
+		"movaps %%xmm2, 0x20(%0)\n"
+		"movaps %%xmm3, 0x30(%0)\n"
+		"movaps %%xmm4, 0x40(%0)\n"
+		"movaps %%xmm5, 0x50(%0)\n"
+		"movaps %%xmm6, 0x60(%0)\n"
+		"movaps %%xmm7, 0x70(%0)\n"
 		:
 		: "r"(dest), "r"(src)
 		: "memory", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5",
@@ -125,14 +127,14 @@ memmove_movnt2x64b(char *dest, const char *src)
 	__m128i xmm6 = _mm_loadu_si128((__m128i *)src + 6);
 	__m128i xmm7 = _mm_loadu_si128((__m128i *)src + 7);
 
-	_mm_stream_si128((__m128i *)dest + 0, xmm0);
-	_mm_stream_si128((__m128i *)dest + 1, xmm1);
-	_mm_stream_si128((__m128i *)dest + 2, xmm2);
-	_mm_stream_si128((__m128i *)dest + 3, xmm3);
-	_mm_stream_si128((__m128i *)dest + 4, xmm4);
-	_mm_stream_si128((__m128i *)dest + 5, xmm5);
-	_mm_stream_si128((__m128i *)dest + 6, xmm6);
-	_mm_stream_si128((__m128i *)dest + 7, xmm7);
+	_mm_store_si128((__m128i *)dest + 0, xmm0);
+	_mm_store_si128((__m128i *)dest + 1, xmm1);
+	_mm_store_si128((__m128i *)dest + 2, xmm2);
+	_mm_store_si128((__m128i *)dest + 3, xmm3);
+	_mm_store_si128((__m128i *)dest + 4, xmm4);
+	_mm_store_si128((__m128i *)dest + 5, xmm5);
+	_mm_store_si128((__m128i *)dest + 6, xmm6);
+	_mm_store_si128((__m128i *)dest + 7, xmm7);
 #endif
 }
 
@@ -145,10 +147,10 @@ memmove_movnt1x64b(char *dest, const char *src)
 		"movdqu 0x10(%1), %%xmm1\n"
 		"movdqu 0x20(%1), %%xmm2\n"
 		"movdqu 0x30(%1), %%xmm3\n"
-		"movntdq %%xmm0, 0x00(%0)\n"
-		"movntdq %%xmm1, 0x10(%0)\n"
-		"movntdq %%xmm2, 0x20(%0)\n"
-		"movntdq %%xmm3, 0x30(%0)\n"
+		"movaps %%xmm0, 0x00(%0)\n"
+		"movaps %%xmm1, 0x10(%0)\n"
+		"movaps %%xmm2, 0x20(%0)\n"
+		"movaps %%xmm3, 0x30(%0)\n"
 		:
 		: "r"(dest), "r"(src)
 		: "memory", "xmm0", "xmm1", "xmm2", "xmm3"
@@ -159,10 +161,10 @@ memmove_movnt1x64b(char *dest, const char *src)
 	__m128i xmm2 = _mm_loadu_si128((__m128i *)src + 2);
 	__m128i xmm3 = _mm_loadu_si128((__m128i *)src + 3);
 
-	_mm_stream_si128((__m128i *)dest + 0, xmm0);
-	_mm_stream_si128((__m128i *)dest + 1, xmm1);
-	_mm_stream_si128((__m128i *)dest + 2, xmm2);
-	_mm_stream_si128((__m128i *)dest + 3, xmm3);
+	_mm_store_si128((__m128i *)dest + 0, xmm0);
+	_mm_store_si128((__m128i *)dest + 1, xmm1);
+	_mm_store_si128((__m128i *)dest + 2, xmm2);
+	_mm_store_si128((__m128i *)dest + 3, xmm3);
 #endif
 }
 
@@ -191,22 +193,22 @@ memmove_movnt8x64b(char *dest, const char *src)
 		"vmovdqu 0x1a0(%1), %%ymm13\n"
 		"vmovdqu 0x1c0(%1), %%ymm14\n"
 		"vmovdqu 0x1e0(%1), %%ymm15\n"
-		"vmovntdq %%ymm0, 0x00(%0)\n"
-		"vmovntdq %%ymm1, 0x20(%0)\n"
-		"vmovntdq %%ymm2, 0x40(%0)\n"
-		"vmovntdq %%ymm3, 0x60(%0)\n"
-		"vmovntdq %%ymm4, 0x80(%0)\n"
-		"vmovntdq %%ymm5, 0xa0(%0)\n"
-		"vmovntdq %%ymm6, 0xc0(%0)\n"
-		"vmovntdq %%ymm7, 0xe0(%0)\n"
-		"vmovntdq %%ymm8, 0x100(%0)\n"
-		"vmovntdq %%ymm9, 0x120(%0)\n"
-		"vmovntdq %%ymm10, 0x140(%0)\n"
-		"vmovntdq %%ymm11, 0x160(%0)\n"
-		"vmovntdq %%ymm12, 0x180(%0)\n"
-		"vmovntdq %%ymm13, 0x1a0(%0)\n"
-		"vmovntdq %%ymm14, 0x1c0(%0)\n"
-		"vmovntdq %%ymm15, 0x1e0(%0)\n"
+		"vmovdqa %%ymm0, 0x00(%0)\n"
+		"vmovdqa %%ymm1, 0x20(%0)\n"
+		"vmovdqa %%ymm2, 0x40(%0)\n"
+		"vmovdqa %%ymm3, 0x60(%0)\n"
+		"vmovdqa %%ymm4, 0x80(%0)\n"
+		"vmovdqa %%ymm5, 0xa0(%0)\n"
+		"vmovdqa %%ymm6, 0xc0(%0)\n"
+		"vmovdqa %%ymm7, 0xe0(%0)\n"
+		"vmovdqa %%ymm8, 0x100(%0)\n"
+		"vmovdqa %%ymm9, 0x120(%0)\n"
+		"vmovdqa %%ymm10, 0x140(%0)\n"
+		"vmovdqa %%ymm11, 0x160(%0)\n"
+		"vmovdqa %%ymm12, 0x180(%0)\n"
+		"vmovdqa %%ymm13, 0x1a0(%0)\n"
+		"vmovdqa %%ymm14, 0x1c0(%0)\n"
+		"vmovdqa %%ymm15, 0x1e0(%0)\n"
 		:
 		: "r"(dest), "r"(src)
 		: "memory", "ymm0", "ymm1", "ymm2", "ymm3", "ymm4", "ymm5",
@@ -231,22 +233,22 @@ memmove_movnt8x64b(char *dest, const char *src)
 	__m256i ymm14 = _mm256_loadu_si256((__m256i *)src + 14);
 	__m256i ymm15 = _mm256_loadu_si256((__m256i *)src + 15);
 
-	_mm256_stream_si256((__m256i *)dest + 0, ymm0);
-	_mm256_stream_si256((__m256i *)dest + 1, ymm1);
-	_mm256_stream_si256((__m256i *)dest + 2, ymm2);
-	_mm256_stream_si256((__m256i *)dest + 3, ymm3);
-	_mm256_stream_si256((__m256i *)dest + 4, ymm4);
-	_mm256_stream_si256((__m256i *)dest + 5, ymm5);
-	_mm256_stream_si256((__m256i *)dest + 6, ymm6);
-	_mm256_stream_si256((__m256i *)dest + 7, ymm7);
-	_mm256_stream_si256((__m256i *)dest + 8, ymm8);
-	_mm256_stream_si256((__m256i *)dest + 9, ymm9);
-	_mm256_stream_si256((__m256i *)dest + 10, ymm10);
-	_mm256_stream_si256((__m256i *)dest + 11, ymm11);
-	_mm256_stream_si256((__m256i *)dest + 12, ymm12);
-	_mm256_stream_si256((__m256i *)dest + 13, ymm13);
-	_mm256_stream_si256((__m256i *)dest + 14, ymm14);
-	_mm256_stream_si256((__m256i *)dest + 15, ymm15);
+	_mm256_store_si256((__m256i *)dest + 0, ymm0);
+	_mm256_store_si256((__m256i *)dest + 1, ymm1);
+	_mm256_store_si256((__m256i *)dest + 2, ymm2);
+	_mm256_store_si256((__m256i *)dest + 3, ymm3);
+	_mm256_store_si256((__m256i *)dest + 4, ymm4);
+	_mm256_store_si256((__m256i *)dest + 5, ymm5);
+	_mm256_store_si256((__m256i *)dest + 6, ymm6);
+	_mm256_store_si256((__m256i *)dest + 7, ymm7);
+	_mm256_store_si256((__m256i *)dest + 8, ymm8);
+	_mm256_store_si256((__m256i *)dest + 9, ymm9);
+	_mm256_store_si256((__m256i *)dest + 10, ymm10);
+	_mm256_store_si256((__m256i *)dest + 11, ymm11);
+	_mm256_store_si256((__m256i *)dest + 12, ymm12);
+	_mm256_store_si256((__m256i *)dest + 13, ymm13);
+	_mm256_store_si256((__m256i *)dest + 14, ymm14);
+	_mm256_store_si256((__m256i *)dest + 15, ymm15);
 #endif
 }
 
@@ -263,14 +265,14 @@ memmove_movnt4x64b(char *dest, const char *src)
 		"vmovdqu 0xa0(%1), %%ymm5\n"
 		"vmovdqu 0xc0(%1), %%ymm6\n"
 		"vmovdqu 0xe0(%1), %%ymm7\n"
-		"vmovntdq %%ymm0, 0x00(%0)\n"
-		"vmovntdq %%ymm1, 0x20(%0)\n"
-		"vmovntdq %%ymm2, 0x40(%0)\n"
-		"vmovntdq %%ymm3, 0x60(%0)\n"
-		"vmovntdq %%ymm4, 0x80(%0)\n"
-		"vmovntdq %%ymm5, 0xa0(%0)\n"
-		"vmovntdq %%ymm6, 0xc0(%0)\n"
-		"vmovntdq %%ymm7, 0xe0(%0)\n"
+		"vmovdqa %%ymm0, 0x00(%0)\n"
+		"vmovdqa %%ymm1, 0x20(%0)\n"
+		"vmovdqa %%ymm2, 0x40(%0)\n"
+		"vmovdqa %%ymm3, 0x60(%0)\n"
+		"vmovdqa %%ymm4, 0x80(%0)\n"
+		"vmovdqa %%ymm5, 0xa0(%0)\n"
+		"vmovdqa %%ymm6, 0xc0(%0)\n"
+		"vmovdqa %%ymm7, 0xe0(%0)\n"
 		:
 		: "r"(dest), "r"(src)
 		: "memory", "ymm0", "ymm1", "ymm2", "ymm3", "ymm4", "ymm5",
@@ -286,14 +288,14 @@ memmove_movnt4x64b(char *dest, const char *src)
 	__m256i ymm6 = _mm256_loadu_si256((__m256i *)src + 6);
 	__m256i ymm7 = _mm256_loadu_si256((__m256i *)src + 7);
 
-	_mm256_stream_si256((__m256i *)dest + 0, ymm0);
-	_mm256_stream_si256((__m256i *)dest + 1, ymm1);
-	_mm256_stream_si256((__m256i *)dest + 2, ymm2);
-	_mm256_stream_si256((__m256i *)dest + 3, ymm3);
-	_mm256_stream_si256((__m256i *)dest + 4, ymm4);
-	_mm256_stream_si256((__m256i *)dest + 5, ymm5);
-	_mm256_stream_si256((__m256i *)dest + 6, ymm6);
-	_mm256_stream_si256((__m256i *)dest + 7, ymm7);
+	_mm256_store_si256((__m256i *)dest + 0, ymm0);
+	_mm256_store_si256((__m256i *)dest + 1, ymm1);
+	_mm256_store_si256((__m256i *)dest + 2, ymm2);
+	_mm256_store_si256((__m256i *)dest + 3, ymm3);
+	_mm256_store_si256((__m256i *)dest + 4, ymm4);
+	_mm256_store_si256((__m256i *)dest + 5, ymm5);
+	_mm256_store_si256((__m256i *)dest + 6, ymm6);
+	_mm256_store_si256((__m256i *)dest + 7, ymm7);
 #endif
 }
 
@@ -306,10 +308,10 @@ memmove_movnt2x64b(char *dest, const char *src)
 		"vmovdqu 0x20(%1), %%ymm1\n"
 		"vmovdqu 0x40(%1), %%ymm2\n"
 		"vmovdqu 0x60(%1), %%ymm3\n"
-		"vmovntdq %%ymm0, 0x00(%0)\n"
-		"vmovntdq %%ymm1, 0x20(%0)\n"
-		"vmovntdq %%ymm2, 0x40(%0)\n"
-		"vmovntdq %%ymm3, 0x60(%0)\n"
+		"vmovdqa %%ymm0, 0x00(%0)\n"
+		"vmovdqa %%ymm1, 0x20(%0)\n"
+		"vmovdqa %%ymm2, 0x40(%0)\n"
+		"vmovdqa %%ymm3, 0x60(%0)\n"
 		:
 		: "r"(dest), "r"(src)
 		: "memory", "ymm0", "ymm1", "ymm2", "ymm3"
@@ -320,10 +322,10 @@ memmove_movnt2x64b(char *dest, const char *src)
 	__m256i ymm2 = _mm256_loadu_si256((__m256i *)src + 2);
 	__m256i ymm3 = _mm256_loadu_si256((__m256i *)src + 3);
 
-	_mm256_stream_si256((__m256i *)dest + 0, ymm0);
-	_mm256_stream_si256((__m256i *)dest + 1, ymm1);
-	_mm256_stream_si256((__m256i *)dest + 2, ymm2);
-	_mm256_stream_si256((__m256i *)dest + 3, ymm3);
+	_mm256_store_si256((__m256i *)dest + 0, ymm0);
+	_mm256_store_si256((__m256i *)dest + 1, ymm1);
+	_mm256_store_si256((__m256i *)dest + 2, ymm2);
+	_mm256_store_si256((__m256i *)dest + 3, ymm3);
 #endif
 }
 
@@ -334,8 +336,8 @@ memmove_movnt1x64b(char *dest, const char *src)
 	asm(
 		"vmovdqu 0x00(%1), %%ymm0\n"
 		"vmovdqu 0x20(%1), %%ymm1\n"
-		"vmovntdq %%ymm0, 0x00(%0)\n"
-		"vmovntdq %%ymm1, 0x20(%0)\n"
+		"vmovdqa %%ymm0, 0x00(%0)\n"
+		"vmovdqa %%ymm1, 0x20(%0)\n"
 		:
 		: "r"(dest), "r"(src)
 		: "memory", "ymm0", "ymm1"
@@ -344,8 +346,8 @@ memmove_movnt1x64b(char *dest, const char *src)
 	__m256i ymm0 = _mm256_loadu_si256((__m256i *)src + 0);
 	__m256i ymm1 = _mm256_loadu_si256((__m256i *)src + 1);
 
-	_mm256_stream_si256((__m256i *)dest + 0, ymm0);
-	_mm256_stream_si256((__m256i *)dest + 1, ymm1);
+	_mm256_store_si256((__m256i *)dest + 0, ymm0);
+	_mm256_store_si256((__m256i *)dest + 1, ymm1);
 #endif
 }
 
@@ -391,38 +393,38 @@ memmove_movnt32x64b(char *dest, const char *src)
 		"vmovdqu64 0x740(%1), %%zmm29\n"
 		"vmovdqu64 0x780(%1), %%zmm30\n"
 		"vmovdqu64 0x7c0(%1), %%zmm31\n"
-		"vmovntdq %%zmm0,  0x000(%0)\n"
-		"vmovntdq %%zmm1,  0x040(%0)\n"
-		"vmovntdq %%zmm2,  0x080(%0)\n"
-		"vmovntdq %%zmm3,  0x0c0(%0)\n"
-		"vmovntdq %%zmm4,  0x100(%0)\n"
-		"vmovntdq %%zmm5,  0x140(%0)\n"
-		"vmovntdq %%zmm6,  0x180(%0)\n"
-		"vmovntdq %%zmm7,  0x1c0(%0)\n"
-		"vmovntdq %%zmm8,  0x200(%0)\n"
-		"vmovntdq %%zmm9,  0x240(%0)\n"
-		"vmovntdq %%zmm10, 0x280(%0)\n"
-		"vmovntdq %%zmm11, 0x2c0(%0)\n"
-		"vmovntdq %%zmm12, 0x300(%0)\n"
-		"vmovntdq %%zmm13, 0x340(%0)\n"
-		"vmovntdq %%zmm14, 0x380(%0)\n"
-		"vmovntdq %%zmm15, 0x3c0(%0)\n"
-		"vmovntdq %%zmm16, 0x400(%0)\n"
-		"vmovntdq %%zmm17, 0x440(%0)\n"
-		"vmovntdq %%zmm18, 0x480(%0)\n"
-		"vmovntdq %%zmm19, 0x4c0(%0)\n"
-		"vmovntdq %%zmm20, 0x500(%0)\n"
-		"vmovntdq %%zmm21, 0x540(%0)\n"
-		"vmovntdq %%zmm22, 0x580(%0)\n"
-		"vmovntdq %%zmm23, 0x5c0(%0)\n"
-		"vmovntdq %%zmm24, 0x600(%0)\n"
-		"vmovntdq %%zmm25, 0x640(%0)\n"
-		"vmovntdq %%zmm26, 0x680(%0)\n"
-		"vmovntdq %%zmm27, 0x6c0(%0)\n"
-		"vmovntdq %%zmm28, 0x700(%0)\n"
-		"vmovntdq %%zmm29, 0x740(%0)\n"
-		"vmovntdq %%zmm30, 0x780(%0)\n"
-		"vmovntdq %%zmm31, 0x7c0(%0)\n"
+		"vmovdqa64 %%zmm0,  0x000(%0)\n"
+		"vmovdqa64 %%zmm1,  0x040(%0)\n"
+		"vmovdqa64 %%zmm2,  0x080(%0)\n"
+		"vmovdqa64 %%zmm3,  0x0c0(%0)\n"
+		"vmovdqa64 %%zmm4,  0x100(%0)\n"
+		"vmovdqa64 %%zmm5,  0x140(%0)\n"
+		"vmovdqa64 %%zmm6,  0x180(%0)\n"
+		"vmovdqa64 %%zmm7,  0x1c0(%0)\n"
+		"vmovdqa64 %%zmm8,  0x200(%0)\n"
+		"vmovdqa64 %%zmm9,  0x240(%0)\n"
+		"vmovdqa64 %%zmm10, 0x280(%0)\n"
+		"vmovdqa64 %%zmm11, 0x2c0(%0)\n"
+		"vmovdqa64 %%zmm12, 0x300(%0)\n"
+		"vmovdqa64 %%zmm13, 0x340(%0)\n"
+		"vmovdqa64 %%zmm14, 0x380(%0)\n"
+		"vmovdqa64 %%zmm15, 0x3c0(%0)\n"
+		"vmovdqa64 %%zmm16, 0x400(%0)\n"
+		"vmovdqa64 %%zmm17, 0x440(%0)\n"
+		"vmovdqa64 %%zmm18, 0x480(%0)\n"
+		"vmovdqa64 %%zmm19, 0x4c0(%0)\n"
+		"vmovdqa64 %%zmm20, 0x500(%0)\n"
+		"vmovdqa64 %%zmm21, 0x540(%0)\n"
+		"vmovdqa64 %%zmm22, 0x580(%0)\n"
+		"vmovdqa64 %%zmm23, 0x5c0(%0)\n"
+		"vmovdqa64 %%zmm24, 0x600(%0)\n"
+		"vmovdqa64 %%zmm25, 0x640(%0)\n"
+		"vmovdqa64 %%zmm26, 0x680(%0)\n"
+		"vmovdqa64 %%zmm27, 0x6c0(%0)\n"
+		"vmovdqa64 %%zmm28, 0x700(%0)\n"
+		"vmovdqa64 %%zmm29, 0x740(%0)\n"
+		"vmovdqa64 %%zmm30, 0x780(%0)\n"
+		"vmovdqa64 %%zmm31, 0x7c0(%0)\n"
 		:
 		: "r"(dest), "r"(src)
 		: "memory", "zmm0", "zmm1", "zmm2", "zmm3", "zmm4", "zmm5",
@@ -465,38 +467,38 @@ memmove_movnt32x64b(char *dest, const char *src)
 	__m512i zmm30 = _mm512_loadu_si512((__m512i *)src + 30);
 	__m512i zmm31 = _mm512_loadu_si512((__m512i *)src + 31);
 
-	_mm512_stream_si512((__m512i *)dest + 0, zmm0);
-	_mm512_stream_si512((__m512i *)dest + 1, zmm1);
-	_mm512_stream_si512((__m512i *)dest + 2, zmm2);
-	_mm512_stream_si512((__m512i *)dest + 3, zmm3);
-	_mm512_stream_si512((__m512i *)dest + 4, zmm4);
-	_mm512_stream_si512((__m512i *)dest + 5, zmm5);
-	_mm512_stream_si512((__m512i *)dest + 6, zmm6);
-	_mm512_stream_si512((__m512i *)dest + 7, zmm7);
-	_mm512_stream_si512((__m512i *)dest + 8, zmm8);
-	_mm512_stream_si512((__m512i *)dest + 9, zmm9);
-	_mm512_stream_si512((__m512i *)dest + 10, zmm10);
-	_mm512_stream_si512((__m512i *)dest + 11, zmm11);
-	_mm512_stream_si512((__m512i *)dest + 12, zmm12);
-	_mm512_stream_si512((__m512i *)dest + 13, zmm13);
-	_mm512_stream_si512((__m512i *)dest + 14, zmm14);
-	_mm512_stream_si512((__m512i *)dest + 15, zmm15);
-	_mm512_stream_si512((__m512i *)dest + 16, zmm16);
-	_mm512_stream_si512((__m512i *)dest + 17, zmm17);
-	_mm512_stream_si512((__m512i *)dest + 18, zmm18);
-	_mm512_stream_si512((__m512i *)dest + 19, zmm19);
-	_mm512_stream_si512((__m512i *)dest + 20, zmm20);
-	_mm512_stream_si512((__m512i *)dest + 21, zmm21);
-	_mm512_stream_si512((__m512i *)dest + 22, zmm22);
-	_mm512_stream_si512((__m512i *)dest + 23, zmm23);
-	_mm512_stream_si512((__m512i *)dest + 24, zmm24);
-	_mm512_stream_si512((__m512i *)dest + 25, zmm25);
-	_mm512_stream_si512((__m512i *)dest + 26, zmm26);
-	_mm512_stream_si512((__m512i *)dest + 27, zmm27);
-	_mm512_stream_si512((__m512i *)dest + 28, zmm28);
-	_mm512_stream_si512((__m512i *)dest + 29, zmm29);
-	_mm512_stream_si512((__m512i *)dest + 30, zmm30);
-	_mm512_stream_si512((__m512i *)dest + 31, zmm31);
+	_mm512_store_si512((__m512i *)dest + 0, zmm0);
+	_mm512_store_si512((__m512i *)dest + 1, zmm1);
+	_mm512_store_si512((__m512i *)dest + 2, zmm2);
+	_mm512_store_si512((__m512i *)dest + 3, zmm3);
+	_mm512_store_si512((__m512i *)dest + 4, zmm4);
+	_mm512_store_si512((__m512i *)dest + 5, zmm5);
+	_mm512_store_si512((__m512i *)dest + 6, zmm6);
+	_mm512_store_si512((__m512i *)dest + 7, zmm7);
+	_mm512_store_si512((__m512i *)dest + 8, zmm8);
+	_mm512_store_si512((__m512i *)dest + 9, zmm9);
+	_mm512_store_si512((__m512i *)dest + 10, zmm10);
+	_mm512_store_si512((__m512i *)dest + 11, zmm11);
+	_mm512_store_si512((__m512i *)dest + 12, zmm12);
+	_mm512_store_si512((__m512i *)dest + 13, zmm13);
+	_mm512_store_si512((__m512i *)dest + 14, zmm14);
+	_mm512_store_si512((__m512i *)dest + 15, zmm15);
+	_mm512_store_si512((__m512i *)dest + 16, zmm16);
+	_mm512_store_si512((__m512i *)dest + 17, zmm17);
+	_mm512_store_si512((__m512i *)dest + 18, zmm18);
+	_mm512_store_si512((__m512i *)dest + 19, zmm19);
+	_mm512_store_si512((__m512i *)dest + 20, zmm20);
+	_mm512_store_si512((__m512i *)dest + 21, zmm21);
+	_mm512_store_si512((__m512i *)dest + 22, zmm22);
+	_mm512_store_si512((__m512i *)dest + 23, zmm23);
+	_mm512_store_si512((__m512i *)dest + 24, zmm24);
+	_mm512_store_si512((__m512i *)dest + 25, zmm25);
+	_mm512_store_si512((__m512i *)dest + 26, zmm26);
+	_mm512_store_si512((__m512i *)dest + 27, zmm27);
+	_mm512_store_si512((__m512i *)dest + 28, zmm28);
+	_mm512_store_si512((__m512i *)dest + 29, zmm29);
+	_mm512_store_si512((__m512i *)dest + 30, zmm30);
+	_mm512_store_si512((__m512i *)dest + 31, zmm31);
 #endif
 }
 
@@ -521,22 +523,22 @@ memmove_movnt16x64b(char *dest, const char *src)
 		"vmovdqu64 0x340(%1), %%zmm13\n"
 		"vmovdqu64 0x380(%1), %%zmm14\n"
 		"vmovdqu64 0x3c0(%1), %%zmm15\n"
-		"vmovntdq %%zmm0,  0x000(%0)\n"
-		"vmovntdq %%zmm1,  0x040(%0)\n"
-		"vmovntdq %%zmm2,  0x080(%0)\n"
-		"vmovntdq %%zmm3,  0x0c0(%0)\n"
-		"vmovntdq %%zmm4,  0x100(%0)\n"
-		"vmovntdq %%zmm5,  0x140(%0)\n"
-		"vmovntdq %%zmm6,  0x180(%0)\n"
-		"vmovntdq %%zmm7,  0x1c0(%0)\n"
-		"vmovntdq %%zmm8,  0x200(%0)\n"
-		"vmovntdq %%zmm9,  0x240(%0)\n"
-		"vmovntdq %%zmm10, 0x280(%0)\n"
-		"vmovntdq %%zmm11, 0x2c0(%0)\n"
-		"vmovntdq %%zmm12, 0x300(%0)\n"
-		"vmovntdq %%zmm13, 0x340(%0)\n"
-		"vmovntdq %%zmm14, 0x380(%0)\n"
-		"vmovntdq %%zmm15, 0x3c0(%0)\n"
+		"vmovdqa64 %%zmm0,  0x000(%0)\n"
+		"vmovdqa64 %%zmm1,  0x040(%0)\n"
+		"vmovdqa64 %%zmm2,  0x080(%0)\n"
+		"vmovdqa64 %%zmm3,  0x0c0(%0)\n"
+		"vmovdqa64 %%zmm4,  0x100(%0)\n"
+		"vmovdqa64 %%zmm5,  0x140(%0)\n"
+		"vmovdqa64 %%zmm6,  0x180(%0)\n"
+		"vmovdqa64 %%zmm7,  0x1c0(%0)\n"
+		"vmovdqa64 %%zmm8,  0x200(%0)\n"
+		"vmovdqa64 %%zmm9,  0x240(%0)\n"
+		"vmovdqa64 %%zmm10, 0x280(%0)\n"
+		"vmovdqa64 %%zmm11, 0x2c0(%0)\n"
+		"vmovdqa64 %%zmm12, 0x300(%0)\n"
+		"vmovdqa64 %%zmm13, 0x340(%0)\n"
+		"vmovdqa64 %%zmm14, 0x380(%0)\n"
+		"vmovdqa64 %%zmm15, 0x3c0(%0)\n"
 		:
 		: "r"(dest), "r"(src)
 		: "memory", "zmm0", "zmm1", "zmm2", "zmm3", "zmm4", "zmm5",
@@ -561,22 +563,22 @@ memmove_movnt16x64b(char *dest, const char *src)
 	__m512i zmm14 = _mm512_loadu_si512((__m512i *)src + 14);
 	__m512i zmm15 = _mm512_loadu_si512((__m512i *)src + 15);
 
-	_mm512_stream_si512((__m512i *)dest + 0, zmm0);
-	_mm512_stream_si512((__m512i *)dest + 1, zmm1);
-	_mm512_stream_si512((__m512i *)dest + 2, zmm2);
-	_mm512_stream_si512((__m512i *)dest + 3, zmm3);
-	_mm512_stream_si512((__m512i *)dest + 4, zmm4);
-	_mm512_stream_si512((__m512i *)dest + 5, zmm5);
-	_mm512_stream_si512((__m512i *)dest + 6, zmm6);
-	_mm512_stream_si512((__m512i *)dest + 7, zmm7);
-	_mm512_stream_si512((__m512i *)dest + 8, zmm8);
-	_mm512_stream_si512((__m512i *)dest + 9, zmm9);
-	_mm512_stream_si512((__m512i *)dest + 10, zmm10);
-	_mm512_stream_si512((__m512i *)dest + 11, zmm11);
-	_mm512_stream_si512((__m512i *)dest + 12, zmm12);
-	_mm512_stream_si512((__m512i *)dest + 13, zmm13);
-	_mm512_stream_si512((__m512i *)dest + 14, zmm14);
-	_mm512_stream_si512((__m512i *)dest + 15, zmm15);
+	_mm512_store_si512((__m512i *)dest + 0, zmm0);
+	_mm512_store_si512((__m512i *)dest + 1, zmm1);
+	_mm512_store_si512((__m512i *)dest + 2, zmm2);
+	_mm512_store_si512((__m512i *)dest + 3, zmm3);
+	_mm512_store_si512((__m512i *)dest + 4, zmm4);
+	_mm512_store_si512((__m512i *)dest + 5, zmm5);
+	_mm512_store_si512((__m512i *)dest + 6, zmm6);
+	_mm512_store_si512((__m512i *)dest + 7, zmm7);
+	_mm512_store_si512((__m512i *)dest + 8, zmm8);
+	_mm512_store_si512((__m512i *)dest + 9, zmm9);
+	_mm512_store_si512((__m512i *)dest + 10, zmm10);
+	_mm512_store_si512((__m512i *)dest + 11, zmm11);
+	_mm512_store_si512((__m512i *)dest + 12, zmm12);
+	_mm512_store_si512((__m512i *)dest + 13, zmm13);
+	_mm512_store_si512((__m512i *)dest + 14, zmm14);
+	_mm512_store_si512((__m512i *)dest + 15, zmm15);
 #endif
 }
 
@@ -593,14 +595,14 @@ memmove_movnt8x64b(char *dest, const char *src)
 		"vmovdqu64 0x140(%1), %%zmm5\n"
 		"vmovdqu64 0x180(%1), %%zmm6\n"
 		"vmovdqu64 0x1c0(%1), %%zmm7\n"
-		"vmovntdq %%zmm0, 0x000(%0)\n"
-		"vmovntdq %%zmm1, 0x040(%0)\n"
-		"vmovntdq %%zmm2, 0x080(%0)\n"
-		"vmovntdq %%zmm3, 0x0c0(%0)\n"
-		"vmovntdq %%zmm4, 0x100(%0)\n"
-		"vmovntdq %%zmm5, 0x140(%0)\n"
-		"vmovntdq %%zmm6, 0x180(%0)\n"
-		"vmovntdq %%zmm7, 0x1c0(%0)\n"
+		"vmovdqa64 %%zmm0, 0x000(%0)\n"
+		"vmovdqa64 %%zmm1, 0x040(%0)\n"
+		"vmovdqa64 %%zmm2, 0x080(%0)\n"
+		"vmovdqa64 %%zmm3, 0x0c0(%0)\n"
+		"vmovdqa64 %%zmm4, 0x100(%0)\n"
+		"vmovdqa64 %%zmm5, 0x140(%0)\n"
+		"vmovdqa64 %%zmm6, 0x180(%0)\n"
+		"vmovdqa64 %%zmm7, 0x1c0(%0)\n"
 		:
 		: "r"(dest), "r"(src)
 		: "memory", "zmm0", "zmm1", "zmm2", "zmm3", "zmm4", "zmm5",
@@ -616,14 +618,14 @@ memmove_movnt8x64b(char *dest, const char *src)
 	__m512i zmm6 = _mm512_loadu_si512((__m512i *)src + 6);
 	__m512i zmm7 = _mm512_loadu_si512((__m512i *)src + 7);
 
-	_mm512_stream_si512((__m512i *)dest + 0, zmm0);
-	_mm512_stream_si512((__m512i *)dest + 1, zmm1);
-	_mm512_stream_si512((__m512i *)dest + 2, zmm2);
-	_mm512_stream_si512((__m512i *)dest + 3, zmm3);
-	_mm512_stream_si512((__m512i *)dest + 4, zmm4);
-	_mm512_stream_si512((__m512i *)dest + 5, zmm5);
-	_mm512_stream_si512((__m512i *)dest + 6, zmm6);
-	_mm512_stream_si512((__m512i *)dest + 7, zmm7);
+	_mm512_store_si512((__m512i *)dest + 0, zmm0);
+	_mm512_store_si512((__m512i *)dest + 1, zmm1);
+	_mm512_store_si512((__m512i *)dest + 2, zmm2);
+	_mm512_store_si512((__m512i *)dest + 3, zmm3);
+	_mm512_store_si512((__m512i *)dest + 4, zmm4);
+	_mm512_store_si512((__m512i *)dest + 5, zmm5);
+	_mm512_store_si512((__m512i *)dest + 6, zmm6);
+	_mm512_store_si512((__m512i *)dest + 7, zmm7);
 #endif
 }
 
@@ -636,10 +638,10 @@ memmove_movnt4x64b(char *dest, const char *src)
 		"vmovdqu64 0x40(%1), %%zmm1\n"
 		"vmovdqu64 0x80(%1), %%zmm2\n"
 		"vmovdqu64 0xc0(%1), %%zmm3\n"
-		"vmovntdq %%zmm0, 0x00(%0)\n"
-		"vmovntdq %%zmm1, 0x40(%0)\n"
-		"vmovntdq %%zmm2, 0x80(%0)\n"
-		"vmovntdq %%zmm3, 0xc0(%0)\n"
+		"vmovdqa64 %%zmm0, 0x00(%0)\n"
+		"vmovdqa64 %%zmm1, 0x40(%0)\n"
+		"vmovdqa64 %%zmm2, 0x80(%0)\n"
+		"vmovdqa64 %%zmm3, 0xc0(%0)\n"
 		:
 		: "r"(dest), "r"(src)
 		: "memory", "zmm0", "zmm1", "zmm2", "zmm3"
@@ -650,10 +652,10 @@ memmove_movnt4x64b(char *dest, const char *src)
 	__m512i zmm2 = _mm512_loadu_si512((__m512i *)src + 2);
 	__m512i zmm3 = _mm512_loadu_si512((__m512i *)src + 3);
 
-	_mm512_stream_si512((__m512i *)dest + 0, zmm0);
-	_mm512_stream_si512((__m512i *)dest + 1, zmm1);
-	_mm512_stream_si512((__m512i *)dest + 2, zmm2);
-	_mm512_stream_si512((__m512i *)dest + 3, zmm3);
+	_mm512_store_si512((__m512i *)dest + 0, zmm0);
+	_mm512_store_si512((__m512i *)dest + 1, zmm1);
+	_mm512_store_si512((__m512i *)dest + 2, zmm2);
+	_mm512_store_si512((__m512i *)dest + 3, zmm3);
 #endif
 }
 
@@ -664,8 +666,8 @@ memmove_movnt2x64b(char *dest, const char *src)
 	asm(
 		"vmovdqu64 0x00(%1), %%zmm0\n"
 		"vmovdqu64 0x40(%1), %%zmm1\n"
-		"vmovntdq %%zmm0, 0x00(%0)\n"
-		"vmovntdq %%zmm1, 0x40(%0)\n"
+		"vmovdqa64 %%zmm0, 0x00(%0)\n"
+		"vmovdqa64 %%zmm1, 0x40(%0)\n"
 		:
 		: "r"(dest), "r"(src)
 		: "memory", "zmm0", "zmm1"
@@ -674,8 +676,8 @@ memmove_movnt2x64b(char *dest, const char *src)
 	__m512i zmm0 = _mm512_loadu_si512((__m512i *)src + 0);
 	__m512i zmm1 = _mm512_loadu_si512((__m512i *)src + 1);
 
-	_mm512_stream_si512((__m512i *)dest + 0, zmm0);
-	_mm512_stream_si512((__m512i *)dest + 1, zmm1);
+	_mm512_store_si512((__m512i *)dest + 0, zmm0);
+	_mm512_store_si512((__m512i *)dest + 1, zmm1);
 #endif
 }
 
@@ -685,7 +687,7 @@ memmove_movnt1x64b(char *dest, const char *src)
 #ifdef USE_ASM
 	asm(
 		"vmovdqu64 0x00(%1), %%zmm0\n"
-		"vmovntdq %%zmm0, 0x00(%0)\n"
+		"vmovdqa64 %%zmm0, 0x00(%0)\n"
 		:
 		: "r"(dest), "r"(src)
 		: "memory", "zmm0"
@@ -693,7 +695,7 @@ memmove_movnt1x64b(char *dest, const char *src)
 #else
 	__m512i zmm0 = _mm512_loadu_si512((__m512i *)src + 0);
 
-	_mm512_stream_si512((__m512i *)dest + 0, zmm0);
+	_mm512_store_si512((__m512i *)dest + 0, zmm0);
 #endif
 }
 
@@ -760,6 +762,4 @@ wc_memcpy(char *dest, const char *src, size_t sz)
 #if defined(USE_AVX) || defined(USE_AVX512F)
 	_mm256_zeroupper();
 #endif
-
-	_mm_sfence();
 }

@@ -46,6 +46,7 @@ measure(char *pmem, size_t pmemlen, size_t cpy_len, char *dram, bool csv)
 	for (unsigned i = 0; i < LOOPS; ++i) {
 		while (dest < dest_end) {
 			wc_memcpy(dest, src, cpy_len);
+			pmem_persist(dest, cpy_len);
 
 			dest += cpy_len;
 			src += cpy_len;
