@@ -730,7 +730,14 @@ wc_memcpy(char *dest, const char *src, size_t sz)
 		dest += 512;
 		src += 512;
 		sz -= 512;
+#if defined(USE_AVX)
+		_mm_sfence();
+#endif
 	}
+#endif
+
+#if !defined(USE_AVX512F)
+	int cls = 0;
 #endif
 
 #if MAX_BATCH_SIZE >= 256
@@ -739,6 +746,14 @@ wc_memcpy(char *dest, const char *src, size_t sz)
 		dest += 256;
 		src += 256;
 		sz -= 256;
+
+#if !defined(USE_AVX512F)
+		cls += 4;
+		if (cls >= 12) {
+			_mm_sfence();
+			cls = 0;
+		}
+#endif
 	}
 #endif
 
@@ -748,6 +763,14 @@ wc_memcpy(char *dest, const char *src, size_t sz)
 		dest += 128;
 		src += 128;
 		sz -= 128;
+
+#if !defined(USE_AVX512F)
+		cls += 2;
+		if (cls >= 12) {
+			_mm_sfence();
+			cls = 0;
+		}
+#endif
 	}
 #endif
 
@@ -756,10 +779,22 @@ wc_memcpy(char *dest, const char *src, size_t sz)
 		dest += 64;
 		src += 64;
 		sz -= 64;
+
+#if !defined(USE_AVX512F)
+		cls += 1;
+		if (cls >= 12) {
+			_mm_sfence();
+			cls = 0;
+		}
+#endif
 	}
+
 #if defined(USE_AVX) || defined(USE_AVX512F)
 	_mm256_zeroupper();
 #endif
 
+#if !defined(USE_AVX512F)
+	if (cls != 0)
+#endif
 	_mm_sfence();
 }
