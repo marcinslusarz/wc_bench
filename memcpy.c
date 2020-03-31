@@ -706,30 +706,17 @@ void memmove_movnt1x64b(char *dest, const char *src);
 void
 wc_memcpy(char *dest, const char *src, size_t sz)
 {
-#if defined(USE_AVX512F) && MAX_BATCH_SIZE >= 2048
-	while (sz >= 2048) {
-		memmove_movnt32x64b(dest, src);
-		dest += 2048;
-		src += 2048;
-		sz -= 2048;
-	}
-#endif
-
-#if defined(USE_AVX512F) && MAX_BATCH_SIZE >= 1024
-	while (sz >= 1024) {
-		memmove_movnt16x64b(dest, src);
-		dest += 1024;
-		src += 1024;
-		sz -= 1024;
-	}
-#endif
-
-#if (defined(USE_AVX) || defined(USE_AVX512F)) && MAX_BATCH_SIZE >= 512
-	while (sz >= 512) {
+#if (defined(USE_AVX) || defined(USE_AVX512F))
+	while (sz >= 768) {
 		memmove_movnt8x64b(dest, src);
 		dest += 512;
 		src += 512;
 		sz -= 512;
+
+		memmove_movnt4x64b(dest, src);
+		dest += 256;
+		src += 256;
+		sz -= 256;
 #if defined(USE_AVX)
 		_mm_sfence();
 #endif
@@ -740,7 +727,6 @@ wc_memcpy(char *dest, const char *src, size_t sz)
 	int cls = 0;
 #endif
 
-#if MAX_BATCH_SIZE >= 256
 	while (sz >= 256) {
 		memmove_movnt4x64b(dest, src);
 		dest += 256;
@@ -755,9 +741,7 @@ wc_memcpy(char *dest, const char *src, size_t sz)
 		}
 #endif
 	}
-#endif
 
-#if MAX_BATCH_SIZE >= 128
 	while (sz >= 128) {
 		memmove_movnt2x64b(dest, src);
 		dest += 128;
@@ -772,7 +756,6 @@ wc_memcpy(char *dest, const char *src, size_t sz)
 		}
 #endif
 	}
-#endif
 
 	while (sz >= 64) {
 		memmove_movnt1x64b(dest, src);
