@@ -16,9 +16,9 @@ MAIN_CFLAGS=$(shell pkg-config --cflags libpmem)
 LDFLAGS=$(shell pkg-config --libs libpmem)
 LIBDIR=$(shell pkg-config --variable libdir libpmem)
 
-all: wc_sse2 wc_avx wc_avx512f
+all: wc_sse2 wc_avx
 
-run_all: run_sse2 run_avx run_avx512f
+run_all: run_sse2 run_avx
 
 clean:
 	rm -f wc_sse2 wc_avx wc_avx512f *.o
