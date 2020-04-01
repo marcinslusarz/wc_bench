@@ -707,25 +707,13 @@ void
 wc_memcpy(char *dest, const char *src, size_t sz)
 {
 #if defined(USE_AVX)
-	while (sz >= 9 * 64) {
+	while (sz >= 8 * 64) {
 		memmove_movnt8x64b(dest, src);
 		dest += 8 * 64;
 		src += 8 * 64;
 		sz -= 8 * 64;
-
-		memmove_movnt1x64b(dest, src);
-		dest += 1 * 64;
-		src += 1 * 64;
-		sz -= 1 * 64;
 
 		_mm_sfence();
-	}
-
-	if (sz >= 8 * 64) {
-		memmove_movnt8x64b(dest, src);
-		dest += 8 * 64;
-		src += 8 * 64;
-		sz -= 8 * 64;
 	}
 
 	if (sz >= 4 * 64) {
@@ -751,7 +739,7 @@ wc_memcpy(char *dest, const char *src, size_t sz)
 
 	_mm256_zeroupper();
 #else
-	while (sz >= 9 * 64) {
+	while (sz >= 8 * 64) {
 		memmove_movnt4x64b(dest, src);
 		dest += 4 * 64;
 		src += 4 * 64;
@@ -761,11 +749,6 @@ wc_memcpy(char *dest, const char *src, size_t sz)
 		dest += 4 * 64;
 		src += 4 * 64;
 		sz -= 4 * 64;
-
-		memmove_movnt1x64b(dest, src);
-		dest += 1 * 64;
-		src += 1 * 64;
-		sz -= 1 * 64;
 
 		_mm_sfence();
 	}
