@@ -707,7 +707,7 @@ void
 wc_memcpy(char *dest, const char *src, size_t sz)
 {
 #if defined(USE_AVX)
-	while (sz >= 8 * 64) {
+	while (sz >= 16 * 64) {
 		memmove_movnt8x64b(dest, src);
 		dest += 8 * 64;
 		src += 8 * 64;
@@ -715,31 +715,8 @@ wc_memcpy(char *dest, const char *src, size_t sz)
 
 		_mm_sfence();
 	}
-
-	if (sz >= 4 * 64) {
-		memmove_movnt4x64b(dest, src);
-		dest += 4 * 64;
-		src += 4 * 64;
-		sz -= 4 * 64;
-	}
-
-	if (sz >= 2 * 64) {
-		memmove_movnt2x64b(dest, src);
-		dest += 2 * 64;
-		src += 2 * 64;
-		sz -= 2 * 64;
-	}
-
-	if (sz >= 64) {
-		memmove_movnt1x64b(dest, src);
-		dest += 64;
-		src += 64;
-		sz -= 64;
-	}
-
-	_mm256_zeroupper();
 #else
-	while (sz >= 8 * 64) {
+	while (sz >= 16 * 64) {
 		memmove_movnt4x64b(dest, src);
 		dest += 4 * 64;
 		src += 4 * 64;
@@ -752,28 +729,42 @@ wc_memcpy(char *dest, const char *src, size_t sz)
 
 		_mm_sfence();
 	}
-
-	if (sz >= 4 * 64) {
-		memmove_movnt4x64b(dest, src);
-		dest += 4 * 64;
-		src += 4 * 64;
-		sz -= 4 * 64;
-	}
-
-	if (sz >= 2 * 64) {
-		memmove_movnt2x64b(dest, src);
-		dest += 2 * 64;
-		src += 2 * 64;
-		sz -= 2 * 64;
-	}
-
-	if (sz >= 64) {
-		memmove_movnt1x64b(dest, src);
-		dest += 64;
-		src += 64;
-		sz -= 64;
-	}
 #endif
 
-	_mm_sfence();
+	size_t sz2 = sz;
+
+	if (sz >= 9 * 64)
+		sz2 = 64 * (sz / 64 / 2);
+
+	while (sz2) {
+		sz -= sz2;
+
+		while (sz2 >= 4 * 64) {
+			memmove_movnt4x64b(dest, src);
+			dest += 4 * 64;
+			src += 4 * 64;
+			sz2 -= 4 * 64;
+		}
+
+		if (sz2 >= 2 * 64) {
+			memmove_movnt2x64b(dest, src);
+			dest += 2 * 64;
+			src += 2 * 64;
+			sz2 -= 2 * 64;
+		}
+
+		if (sz2 >= 64) {
+			memmove_movnt1x64b(dest, src);
+			dest += 64;
+			src += 64;
+			sz2 -= 64;
+		}
+		sz2 = sz;
+
+		_mm_sfence();
+	}
+
+#if defined(USE_AVX)
+	_mm256_zeroupper();
+#endif
 }
